@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
@@ -34,6 +35,11 @@ namespace BackendApi.Controllers
             _appSettings = appSettings.Value;
         }
 
+        /// <summary>
+        /// Method for Authenticate user
+        /// </summary>
+        /// <param name="model">User model</param>
+        /// <returns>Returns user credentials</returns>
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]AuthenticateModel model)
@@ -41,7 +47,7 @@ namespace BackendApi.Controllers
             var user = _userService.Authenticate(model.Username, model.Password);
 
             if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                throw new ApiException("Username or password is incorrect", HttpStatusCode.Unauthorized);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -72,20 +78,16 @@ namespace BackendApi.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody]RegisterModel model)
         {
+            if (model == null)
+                throw new ArgumentNullException(model.ToString());
+
             // map model to entity
             var user = _mapper.Map<User>(model);
 
-            try
-            {
-                // create user
-                _userService.Create(user, model.Password);
-                return Ok();
-            }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
+            // create user
+            _userService.Create(user, model.Password);
+            return Ok();
+
         }
 
         [HttpGet]
@@ -107,21 +109,17 @@ namespace BackendApi.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UpdateModel model)
         {
+            if (model != null)
+                throw new ArgumentNullException("User model cannot be null.");
+
             // map model to entity and set id
             var user = _mapper.Map<User>(model);
             user.Id = id;
 
-            try
-            {
-                // update user 
-                _userService.Update(user, model.Password);
-                return Ok();
-            }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
-            }
+            // update user 
+            _userService.Update(user, model.Password);
+            return Ok();
+
         }
 
         [HttpDelete("{id}")]
