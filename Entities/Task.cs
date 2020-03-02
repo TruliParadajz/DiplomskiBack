@@ -15,6 +15,5 @@ namespace BackendApi.Entities
         public bool? AllDay { get; set; }
         public bool? Resizable { get; set; }
         public bool? Draggable { get; set; }
-        public int MyProperty { get; set; }
     }
 }
