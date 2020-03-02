@@ -73,7 +73,11 @@ namespace BackendApi.Controllers
                 Token = tokenString
             });
         }
-
+        /// <summary>
+        /// Method for user registration
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Returns user credentials</returns>
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]RegisterModel model)
@@ -89,7 +93,10 @@ namespace BackendApi.Controllers
             return Ok();
 
         }
-
+        /// <summary>
+        /// Method for getting all users
+        /// </summary>
+        /// <returns>Returns all users</returns>
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -97,7 +104,11 @@ namespace BackendApi.Controllers
             var model = _mapper.Map<IList<UserModel>>(users);
             return Ok(model);
         }
-
+        /// <summary>
+        /// Method for getting user by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns user id</returns>
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -105,7 +116,12 @@ namespace BackendApi.Controllers
             var model = _mapper.Map<UserModel>(user);
             return Ok(model);
         }
-
+        /// <summary>
+        /// Method for updating a user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns>Returns updated user</returns>
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UpdateModel model)
         {
@@ -121,7 +137,11 @@ namespace BackendApi.Controllers
             return Ok();
 
         }
-
+        /// <summary>
+        /// Method for deleting user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns deleted user</returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
