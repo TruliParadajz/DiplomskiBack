@@ -37,7 +37,7 @@ namespace BackendApi.Controllers
 
         /// <summary>
         /// Method for Authenticate user
-        /// </summary>
+        /// </summary>  
         /// <param name="model">User model</param>
         /// <returns>Returns user credentials</returns>
         [AllowAnonymous]
