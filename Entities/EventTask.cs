@@ -9,10 +9,9 @@ namespace BackendApi.Entities
     {
         public int Id { get; set; }
         public DateTime StartDt { get; set; }
-        public DateTime? EntDt { get; set; }
+        public DateTime? EndDt { get; set; }
         public string Title { get; set; }
         public string Colour { get; set; }
-        public bool? AllDay { get; set; }
         public bool? Resizable { get; set; }
         public bool? Draggable { get; set; }
 

@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendApi.Context;
 using BackendApi.Entities;
+using BackendApi.Models;
+using BackendApi.Services;
+using BackendApi.Helpers_and_Extensions;
+using System.Net;
 
 namespace BackendApi.Controllers
 {
@@ -15,45 +19,57 @@ namespace BackendApi.Controllers
     public class EventTasksController : ControllerBase
     {
         private readonly DataContext _context;
+        private IEventTasksService _eventTasksService;
 
-        public EventTasksController(DataContext context)
+        public EventTasksController(DataContext context, IEventTasksService eventTaskService)
         {
             _context = context;
+            _eventTasksService = eventTaskService;
         }
 
         // GET: api/EventTasks
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventTask>>> GetEventTask()
+        /// <summary>
+        /// Method for getting all the EventTasks
+        /// </summary>
+        /// <returns>List of EventTasks</returns>
+        [HttpGet("{userId}")]
+        public ActionResult<IEnumerable<EventTask>> GetEventTasks(int userId)
         {
-            return await _context.EventTask.ToListAsync();
+            var eventTasks = _eventTasksService.FindAll(userId);
+            return Ok(eventTasks);
         }
 
         // GET: api/EventTasks/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<EventTask>> GetEventTask(int id)
-        {
-            var eventTask = await _context.EventTask.FindAsync(id);
+        /// <summary>
+        /// Method for getting an EventTask by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns EventTask</returns>
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<EventTask>> GetEventTask(int id)
+        //{
+        //    var eventTask = await _context.EventTask.FindAsync(id);
+ 
+        //    if (eventTask == null)
+        //    {
+        //        throw new ApiException("Task not found", HttpStatusCode.NotFound);
+        //    }
 
-            if (eventTask == null)
-            {
-                return NotFound();
-            }
-
-            return eventTask;
-        }
+        //    return eventTask;
+        //}
 
         // PUT: api/EventTasks/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEventTask(int id, EventTask eventTask)
+        /// <summary>
+        /// Method for editing an EventTask
+        /// </summary>
+        /// <param name="eventTask"></param>
+        /// <returns>Returns edited EventTask</returns>
+        [HttpPut]
+        public async Task<ActionResult<EventTask>> PutEventTask(EventTask eventTask)
         {
-            if (id != eventTask.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(eventTask).State = EntityState.Modified;
+            var editedEventTask =_eventTasksService.Edit(eventTask);            
 
             try
             {
@@ -61,7 +77,7 @@ namespace BackendApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EventTaskExists(id))
+                if (!EventTaskExists(eventTask.Id))
                 {
                     return NotFound();
                 }
@@ -71,37 +87,56 @@ namespace BackendApi.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(editedEventTask);
         }
 
         // POST: api/EventTasks
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+        /// <summary>
+        /// Method for creating an EventTask
+        /// </summary>
+        /// <param name="eventTaskInput"></param>
+        /// <returns>Returns newly created EventTask</returns>
         [HttpPost]
-        public async Task<ActionResult<EventTask>> PostEventTask(EventTask eventTask)
+        public async Task<ActionResult<EventTask>> PostEventTask(EventTask eventTaskInput)
         {
-            _context.EventTask.Add(eventTask);
+            var eventTask = _eventTasksService.Create(eventTaskInput);
+            if(eventTask == null)
+            {
+                throw new ApiException("Starting date must be less than ending date", HttpStatusCode.BadRequest);
+            }
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEventTask", new { id = eventTask.Id }, eventTask);
+            //return CreatedAtAction("GetEventTask", new { id = eventTask.Id }, eventTask);
+            return Ok(eventTask);
         }
 
         // DELETE: api/EventTasks/5
+        /// <summary>
+        /// Method for deleting an EventTask
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns deleted EventTask</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<EventTask>> DeleteEventTask(int id)
         {
-            var eventTask = await _context.EventTask.FindAsync(id);
-            if (eventTask == null)
-            {
-                return NotFound();
-            }
+            var eventTask = _eventTasksService.Delete(id);
 
-            _context.EventTask.Remove(eventTask);
+            if(eventTask == null)
+            {
+                throw new ApiException("Task not found", HttpStatusCode.NotFound);
+            }
             await _context.SaveChangesAsync();
 
             return eventTask;
         }
 
+        /// <summary>
+        /// Method for checking if an EventTask exists
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns searched EventTask</returns>
         private bool EventTaskExists(int id)
         {
             return _context.EventTask.Any(e => e.Id == id);

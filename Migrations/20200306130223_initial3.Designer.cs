@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200303151630_EventTasks")]
-    partial class EventTasks
+    [Migration("20200306130223_initial3")]
+    partial class initial3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,16 +28,13 @@ namespace BackendApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool?>("AllDay")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("Draggable")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("EntDt")
+                    b.Property<DateTime?>("EndDt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool?>("Resizable")

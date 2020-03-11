@@ -26,16 +26,13 @@ namespace BackendApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool?>("AllDay")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("Draggable")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("EntDt")
+                    b.Property<DateTime?>("EndDt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool?>("Resizable")
