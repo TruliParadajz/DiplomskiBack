@@ -26,10 +26,19 @@ namespace BackendApi.Controllers
             _context = context;
             _eventTasksService = eventTaskService;
         }
-
+        /// <summary>
+        /// Method for getting all the EventTasks regardless of userId
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult<IEnumerable<EventTask>> GetEventTasks()
+        {
+            var eventTasks = _eventTasksService.FindAll();
+            return Ok(eventTasks);
+        }
         // GET: api/EventTasks
         /// <summary>
-        /// Method for getting all the EventTasks
+        /// Method for getting all the EventTasks of a specified user
         /// </summary>
         /// <returns>List of EventTasks</returns>
         [HttpGet("{userId}")]
@@ -38,7 +47,6 @@ namespace BackendApi.Controllers
             var eventTasks = _eventTasksService.FindAll(userId);
             return Ok(eventTasks);
         }
-
         // GET: api/EventTasks/5
         /// <summary>
         /// Method for getting an EventTask by id

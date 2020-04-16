@@ -34,11 +34,7 @@ namespace BackendApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // use sql server db in production and sqlite db in development
-            if (_env.IsProduction())
-                services.AddDbContext<DataContext>(x => x.UseSqlServer(_configuration.GetConnectionString("PlannerDatabaseProd")));
-            else
-                services.AddDbContext<DataContext>(x => x.UseSqlServer(_configuration.GetConnectionString("PlannerDatabase")));
+            services.AddDbContext<DataContext>(x => x.UseSqlServer(_configuration.GetConnectionString("PlannerDatabase")));
 
             services.AddCors();
             services.AddControllers();

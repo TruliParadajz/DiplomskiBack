@@ -16,6 +16,7 @@ namespace BackendApi.Services
         public EventTask Edit(EventTask inputModel);
         public EventTask Delete(int id);
         public IEnumerable<EventTask> FindAll(int userId);
+        public IEnumerable<EventTask> FindAll();
     }
     public class EventTasksService : IEventTasksService
     {
@@ -104,6 +105,16 @@ namespace BackendApi.Services
         public IEnumerable<EventTask> FindAll(int userId)
         {
             var outputList = _context.EventTask.Where(u => u.UserId == userId).ToList();
+            foreach (var eventTask in outputList)
+            {
+                eventTask.Colour = ChangeColour(eventTask);
+            }
+            return outputList;
+        }
+
+        public IEnumerable<EventTask> FindAll()
+        {
+            var outputList = _context.EventTask.ToList();
             foreach (var eventTask in outputList)
             {
                 eventTask.Colour = ChangeColour(eventTask);
