@@ -91,9 +91,13 @@ namespace BackendApi
                 };
             });
 
+            services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
+
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEventTasksService, EventTasksService>();
+            services.AddScoped<IUserNotificationService, UserNotificationService>();
+            services.AddScoped<IEventTaskNotificationService, EventTaskNotificationService>();
             services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }

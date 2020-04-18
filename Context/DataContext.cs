@@ -9,6 +9,8 @@ namespace BackendApi.Context
 
         public DbSet<User> Users { get; set; }
 
-        public DbSet<BackendApi.Entities.EventTask> EventTask { get; set; }
+        public DbSet<BackendApi.Entities.EventTask> EventTasks { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<EventTaskNotification> EventTaskNotifications { get; set; }
     }
 }

@@ -147,7 +147,7 @@ namespace BackendApi.Controllers
         /// <returns>Returns searched EventTask</returns>
         private bool EventTaskExists(int id)
         {
-            return _context.EventTask.Any(e => e.Id == id);
+            return _context.EventTasks.Any(e => e.Id == id);
         }
     }
 }

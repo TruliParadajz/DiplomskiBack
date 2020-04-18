@@ -13,17 +13,21 @@ namespace BackendApi.Services
         IEnumerable<User> GetAll();
         User GetById(int id);
         User Create(User user, string password);
-        void Update(User user, string password = null);
+        User Update(User user, string password = null);
         void Delete(int id);
     }
 
     public class UserService : IUserService
     {
         private DataContext _context;
+        private IUserNotificationService _userNotificationService;
 
-        public UserService(DataContext context)
+        public UserService(
+            DataContext context,
+            IUserNotificationService userNotificationService)
         {
             _context = context;
+            _userNotificationService = userNotificationService;
         }
 
         public User Authenticate(string username, string password)
@@ -71,12 +75,18 @@ namespace BackendApi.Services
             user.PasswordSalt = passwordSalt;
 
             _context.Users.Add(user);
+            _context.SaveChanges();            
+
+            var notification = _userNotificationService.Create(user.Id);
+            user.UserNotification = notification;
+
+            _context.Users.Update(user);
             _context.SaveChanges();
 
             return user;
         }
 
-        public void Update(User userParam, string password = null)
+        public User Update(User userParam, string password = null)
         {
             var user = _context.Users.Find(userParam.Id);
 
@@ -112,6 +122,7 @@ namespace BackendApi.Services
 
             _context.Users.Update(user);
             _context.SaveChanges();
+            return user;
         }
 
         public void Delete(int id)

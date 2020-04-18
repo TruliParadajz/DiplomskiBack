@@ -24,15 +24,18 @@ namespace BackendApi.Controllers
         private IUserService _userService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly SmtpSettings _smtpSettings;
 
         public UsersController(
             IUserService userService,
             IMapper mapper,
-            IOptions<AppSettings> appSettings)
+            IOptions<AppSettings> appSettings,
+            IOptions<SmtpSettings> smtpSettings)
         {
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            _smtpSettings = smtpSettings.Value;
         }
 
         /// <summary>
@@ -125,7 +128,7 @@ namespace BackendApi.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UpdateModel model)
         {
-            if (model != null)
+            if (model == null)
                 throw new ArgumentNullException("User model cannot be null.");
 
             // map model to entity and set id
@@ -133,9 +136,9 @@ namespace BackendApi.Controllers
             user.Id = id;
 
             // update user 
-            _userService.Update(user, model.Password);
+            var newUser = _userService.Update(user, model.Password);
+            // return basic user info and authentication token
             return Ok();
-
         }
         /// <summary>
         /// Method for deleting user

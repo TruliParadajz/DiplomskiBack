@@ -19,5 +19,7 @@ namespace BackendApi.Entities
         public byte[] PasswordSalt { get; set; }
 
         public ICollection<EventTask> Events { get; set; }
+        public UserNotification UserNotification { get; set; }
+        public EventTaskNotification EventTaskNotification { get; set; }
     }
 }
