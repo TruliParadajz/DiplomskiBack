@@ -12,8 +12,8 @@ namespace BackendApi.Services
     public interface IUserNotificationService
     {
         UserNotification Create(int userId);
-        UserNotification Update(UserNotificationUpdateModel notificationInput);
-        UserNotification GetById(int userId);
+        Task<UserNotification> Update(UserNotificationUpdateModel notificationInput);
+        UserNotification GetByUserId(int userId);
     }
     public class UserNotificationService : IUserNotificationService
     {
@@ -37,13 +37,13 @@ namespace BackendApi.Services
             return newNotification;
         }
 
-        public UserNotification GetById(int userId)
+        public UserNotification GetByUserId(int userId)
         {
             var result = _context.UserNotifications.Where(uN => uN.UserId == userId).FirstOrDefault();
             return result;
         }
 
-        public UserNotification Update(UserNotificationUpdateModel notificationInput)
+        public async Task<UserNotification> Update(UserNotificationUpdateModel notificationInput)
         {
             var userNotification = _context.UserNotifications.
                 Find(notificationInput.Id);
@@ -62,8 +62,8 @@ namespace BackendApi.Services
                     userNotification.Hours = notificationInput.Hours;
                 }
 
-                _context.Update(userNotification);
-                _context.SaveChanges();
+                _context.UserNotifications.Update(userNotification);
+                await _context.SaveChangesAsync();
 
                 return userNotification;
             }

@@ -19,7 +19,7 @@ namespace BackendApi.Services
     {
         public Task NotifyEmail(int eventTaskId, int userId);
     }
-    public class EventTaskNotificationService : ControllerBase, IEventTaskNotificationService 
+    public class EventTaskNotificationService : ControllerBase, IEventTaskNotificationService
     {
         private DataContext _context;
         private IUserNotificationService _userNotificationService;
@@ -78,17 +78,17 @@ namespace BackendApi.Services
                 EndDateTime = endDateTime,
                 StartDateTime = eventTask.StartDt.ToString(),
                 Recipient = user.Username,
-                Subject = eventTask.Id.ToString(),
+                Subject = "Task Id " + eventTask.Id.ToString(),
                 Text = $"Dear {user.FirstName}" +
                 '\n' +
-                $"Your Event Task titled {eventTask.Title} +" +
+                $"Your Event Task titled {eventTask.Title} " +
                 $" will start in {userNotification.Hours.ToString()} hours." +
                 '\n' +
                 ".o Team",
                 Hours = userNotification.Hours
             };
             var result = SendEmailAsync(emailModel);
-            if(result.IsCompleted == false)
+            if (result.IsCompleted)
             {
                 EventTaskNotification newEventTaskNotification = new EventTaskNotification()
                 {
@@ -113,33 +113,33 @@ namespace BackendApi.Services
         }
 
         public async Task Execute(string recipient, string subject, string text)
-        {            
-                //var mykey = _configuration["SmtpSettings"];
-                //var server = _smtpSettings.Server;
-                //var username = _smtpSettings.Username;
-                //var password = _smtpSettings.Password;
-                //var port = _smtpSettings.Port;
-                //var tls = _smtpSettings.TLS;
+        {
+            //var mykey = _configuration["SmtpSettings"];
+            //var server = _smtpSettings.Server;
+            //var username = _smtpSettings.Username;
+            //var password = _smtpSettings.Password;
+            //var port = _smtpSettings.Port;
+            //var tls = _smtpSettings.TLS;
 
-                var server = "smtp.gmail.com";
-                var username = "veze.bez69@gmail.com";
-                var password = "Bezveze123";
-                var port = 587;
+            string server = "smtp.gmail.com";
+            var username = "veze.bez69@gmail.com";
+            var password = "Bezveze123";
+            int port = 587;
 
-                MailMessage mail = new MailMessage()
-                {
-                    From = new MailAddress(username, ".o"),
-                    Subject = subject,
-                    Body = text,
-                    IsBodyHtml = false,
-                    Priority = MailPriority.High,  
-                    
-                };
+            MailMessage mail = new MailMessage()
+            {
+                From = new MailAddress(username, ".o"),
+                Subject = subject,
+                Body = text,
+                IsBodyHtml = false,
+                Priority = MailPriority.High,
 
-                mail.To.Add(new MailAddress(recipient));
+            };
+
+            mail.To.Add(new MailAddress(recipient));
             try
             {
-                using (var smtp = new SmtpClient("smtp.gmail.com", 587))                
+                using (var smtp = new SmtpClient(server, port))
                 {
                     smtp.UseDefaultCredentials = false;
                     smtp.Credentials = new System.Net.NetworkCredential(username, password);
@@ -147,7 +147,7 @@ namespace BackendApi.Services
                     smtp.Send(mail);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }

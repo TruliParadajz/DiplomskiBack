@@ -80,8 +80,7 @@ namespace BackendApi.Migrations
 
                     b.HasIndex("EventTaskId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.HasIndex("UserNotificationId");
 

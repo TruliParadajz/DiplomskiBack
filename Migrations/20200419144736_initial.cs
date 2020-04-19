@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BackendApi.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -90,8 +90,7 @@ namespace BackendApi.Migrations
                         name: "FK_EventTaskNotifications_EventTasks_EventTaskId",
                         column: x => x.EventTaskId,
                         principalTable: "EventTasks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_EventTaskNotifications_Users_UserId",
                         column: x => x.UserId,
@@ -112,8 +111,7 @@ namespace BackendApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_EventTaskNotifications_UserId",
                 table: "EventTaskNotifications",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventTaskNotifications_UserNotificationId",
