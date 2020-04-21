@@ -16,6 +16,8 @@ namespace BackendApi.Services
         public EventTask Edit(EventTask inputModel);
         public EventTask Delete(int id);
         public IEnumerable<EventTask> FindAll(int userId);
+        public IEnumerable<EventTask> FindAll();
+        public EventTask GetById(int eventTaskId);
     }
     public class EventTasksService : IEventTasksService
     {
@@ -63,7 +65,7 @@ namespace BackendApi.Services
             };
 
             task.Colour = ChangeColour(task);
-            _context.EventTask.Add(task);
+            _context.EventTasks.Add(task);
             return task;
         }
 
@@ -74,7 +76,7 @@ namespace BackendApi.Services
                 return null;
             }
 
-            var isId = _context.EventTask.Select(e => e.Id == inputModel.Id);
+            var isId = _context.EventTasks.Select(e => e.Id == inputModel.Id);
 
             if (isId == null)
             {
@@ -90,25 +92,41 @@ namespace BackendApi.Services
 
         public EventTask Delete(int id)
         {
-            var eventTask = _context.EventTask.Find(id);
+            var eventTask = _context.EventTasks.Find(id);
             if (eventTask == null)
             {
                 return null;
             }
 
-            _context.EventTask.Remove(eventTask);
+            _context.EventTasks.Remove(eventTask);
 
             return eventTask;
         }
 
         public IEnumerable<EventTask> FindAll(int userId)
         {
-            var outputList = _context.EventTask.Where(u => u.UserId == userId).ToList();
+            var outputList = _context.EventTasks.Where(u => u.UserId == userId).ToList();
             foreach (var eventTask in outputList)
             {
                 eventTask.Colour = ChangeColour(eventTask);
             }
             return outputList;
+        }
+
+        public IEnumerable<EventTask> FindAll()
+        {
+            var outputList = _context.EventTasks.ToList();
+            foreach (var eventTask in outputList)
+            {
+                eventTask.Colour = ChangeColour(eventTask);
+            }
+            return outputList;
+        }
+
+        public EventTask GetById(int eventTaskId)
+        {
+            var data = _context.EventTasks.Find(eventTaskId);
+            return data;
         }
     }
 }
