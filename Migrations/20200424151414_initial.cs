@@ -36,6 +36,8 @@ namespace BackendApi.Migrations
                     Colour = table.Column<string>(nullable: true),
                     Resizable = table.Column<bool>(nullable: true),
                     Draggable = table.Column<bool>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    Completed = table.Column<bool>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

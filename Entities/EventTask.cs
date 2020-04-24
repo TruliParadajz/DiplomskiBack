@@ -14,6 +14,8 @@ namespace BackendApi.Entities
         public string Colour { get; set; }
         public bool? Resizable { get; set; }
         public bool? Draggable { get; set; }
+        public string Description { get; set; }
+        public bool Completed { get; set; }
 
         public int UserId { get; set; }
         public User User { get; set; }

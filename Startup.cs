@@ -17,6 +17,8 @@ using BackendApi.MW;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IO;
+using BackendApi.HubConfig;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BackendApi
 {
@@ -36,7 +38,14 @@ namespace BackendApi
         {
             services.AddDbContext<DataContext>(x => x.UseSqlServer(_configuration.GetConnectionString("PlannerDatabase")));
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            });
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -93,6 +102,8 @@ namespace BackendApi
 
             services.Configure<SmtpSettings>(_configuration.GetSection("SmtpSettings"));
 
+            services.AddSignalR();
+
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEventTasksService, EventTasksService>();
@@ -100,6 +111,7 @@ namespace BackendApi
             services.AddScoped<IEventTaskNotificationService, EventTaskNotificationService>();
             services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -122,15 +134,18 @@ namespace BackendApi
             app.UseRouting();
 
             // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-
+            app.UseCors("CorsPolicy");
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/notification");
+            });
+
         }
     }
 }
+

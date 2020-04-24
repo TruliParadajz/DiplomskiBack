@@ -29,6 +29,12 @@ namespace BackendApi.Migrations
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Completed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("Draggable")
                         .HasColumnType("bit");
 
@@ -173,7 +179,7 @@ namespace BackendApi.Migrations
 
             modelBuilder.Entity("BackendApi.Entities.UserNotification", b =>
                 {
-                    b.HasOne("BackendApi.Entities.User", null)
+                    b.HasOne("BackendApi.Entities.User", "User")
                         .WithOne("UserNotification")
                         .HasForeignKey("BackendApi.Entities.UserNotification", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
