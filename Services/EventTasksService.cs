@@ -82,12 +82,6 @@ namespace BackendApi.Services
 
         public EventTask Edit(EventTask inputModel)
         {
-            using (var scope = _services.CreateScope())
-            {
-                var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHub>>();
-                hubContext.Clients.All.SendAsync("transfernotifications", inputModel);
-            }
-
             if (inputModel.StartDt > inputModel.EndDt)
             {
                 return null;

@@ -74,6 +74,8 @@ namespace BackendApi.Services
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
+            user.Power = 0;
+
             _context.Users.Add(user);
             _context.SaveChanges();            
 

@@ -115,7 +115,7 @@ namespace BackendApi.Services
                     UserNotificationId = userNotification.Id
                 };
 
-                if (userNotification.AppNotification == true && eventTaskNotification.AppNotification == 0)
+                if (userNotification.AppNotification == true)
                 {
                     HubConnection connection = new HubConnectionBuilder()
                         .WithUrl("http://localhost:57541/notification")
@@ -188,7 +188,7 @@ namespace BackendApi.Services
             }
             catch (Exception ex)
             {
-
+                
             }
         }
     }
