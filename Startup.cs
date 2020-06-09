@@ -92,12 +92,12 @@ namespace BackendApi
                     {
                         var accessToken = context.Request.Query["access_token"];
 
-                        // If the request is for our hub...
+                        // If the request is for the notification
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
                             (path.StartsWithSegments("/notification")))
                         {
-                            // Read the token out of the query string
+                            // Read the token from the query
                             context.Token = accessToken;
                         }
                         return Task.CompletedTask;

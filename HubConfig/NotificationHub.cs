@@ -20,7 +20,8 @@ namespace BackendApi.HubConfig
                 .FirstOrDefault()
                 .ConnectionId;
 
-            await Clients.Client(connectionId).SendAsync("transfernotifications", emailModel);
+            await Clients.Client(connectionId)
+                .SendAsync("transfernotifications", emailModel);
         }
 
         public override Task OnConnectedAsync()
@@ -36,7 +37,8 @@ namespace BackendApi.HubConfig
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            var connection = CurrentConnections.FirstOrDefault(x => x.UserName == Context.User.Identity.Name);
+            var connection = CurrentConnections
+                .FirstOrDefault(x => x.UserName == Context.User.Identity.Name);
 
             if (connection != null)
             {

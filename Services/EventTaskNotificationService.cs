@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -23,7 +24,7 @@ namespace BackendApi.Services
 {
     public interface IEventTaskNotificationService
     {
-        public Task NotifyEmail(int eventTaskId, int userId);
+        public Task Notify(int eventTaskId, int userId);
     }
     public class EventTaskNotificationService : ControllerBase, IEventTaskNotificationService
     {
@@ -35,7 +36,7 @@ namespace BackendApi.Services
         private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
         private IServiceProvider _services;
-        //private readonly IHubContext<NotificationHub, INotificationHub> _hub;
+        private readonly ILogger _logger;
 
         public EventTaskNotificationService(
             DataContext context,
@@ -45,6 +46,7 @@ namespace BackendApi.Services
             IOptions<SmtpSettings> smtpSettings,
             IOptions<AppSettings> appSettings,
             IConfiguration configuration,
+            ILogger<EventTaskNotificationService> logger,
             IServiceProvider services
             //IHubContext<NotificationHub, INotificationHub> hub
             )
@@ -57,10 +59,10 @@ namespace BackendApi.Services
             _appSettings = appSettings.Value;
             _configuration = configuration;
             _services = services;
-            // _hub = hub;
+            _logger = logger;
         }
 
-        public Task NotifyEmail(int eventTaskId, int userId)
+        public Task Notify(int eventTaskId, int userId)
         {
             var userNotification = _context.UserNotifications
                 .Where(uN => uN.UserId == userId)
@@ -188,7 +190,7 @@ namespace BackendApi.Services
             }
             catch (Exception ex)
             {
-                
+                _logger.LogWarning($"Error sending email. Recipient username : {recipient}");
             }
         }
     }
