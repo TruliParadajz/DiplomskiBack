@@ -1,12 +1,17 @@
 ﻿using BackendApi.Context;
 using BackendApi.Entities;
 using BackendApi.Helpers_and_Extensions;
-using BackendApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Http;
+using Microsoft.AspNetCore.SignalR.Client;
+using BackendApi.HubConfig;
+using System.Text.Json;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.OpenApi.Writers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BackendApi.Services
 {
@@ -18,14 +23,18 @@ namespace BackendApi.Services
         public IEnumerable<EventTask> FindAll(int userId);
         public IEnumerable<EventTask> FindAll();
         public EventTask GetById(int eventTaskId);
+        public EventTask Complete(int eventTaskId);
     }
     public class EventTasksService : IEventTasksService
     {
         private DataContext _context;
+        private IServiceProvider _services;
 
-        public EventTasksService(DataContext context)
+        public EventTasksService(DataContext context,
+            IServiceProvider services)
         {
             _context = context;
+            _services = services;
         }
 
         private string ChangeColour(EventTask inputModel)
@@ -61,6 +70,8 @@ namespace BackendApi.Services
                 Title = inputModel.Title,
                 UserId = inputModel.UserId,
                 Colour = Colour.Blue.Value,
+                Description = inputModel.Description,
+                Completed = false,
                 User = _context.Users.Where(u => u.Id == inputModel.UserId).FirstOrDefault()
             };
 
@@ -93,11 +104,19 @@ namespace BackendApi.Services
         public EventTask Delete(int id)
         {
             var eventTask = _context.EventTasks.Find(id);
+            var eventTaskNotification = _context.EventTaskNotifications
+                .Where(eTN => eTN.EventTaskId == id)
+                .FirstOrDefault();
+
             if (eventTask == null)
             {
                 return null;
             }
 
+            if(eventTaskNotification != null)
+            {
+                _context.EventTaskNotifications.Remove(eventTaskNotification);
+            }
             _context.EventTasks.Remove(eventTask);
 
             return eventTask;
@@ -126,6 +145,17 @@ namespace BackendApi.Services
         public EventTask GetById(int eventTaskId)
         {
             var data = _context.EventTasks.Find(eventTaskId);
+            return data;
+        }
+
+        public EventTask Complete(int eventTaskId)
+        {
+            var data = _context.EventTasks.Find(eventTaskId);
+            data.Completed = !data.Completed;
+
+            _context.EventTasks.Update(data);
+            _context.SaveChangesAsync();
+
             return data;
         }
     }

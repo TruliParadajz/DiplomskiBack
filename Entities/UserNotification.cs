@@ -12,5 +12,7 @@ namespace BackendApi.Entities
         public bool EmailNotification { get; set; }
         public bool AppNotification { get; set; }
         public double Hours { get; set; }
+
+        public virtual User User { get; set; }
     }
 }

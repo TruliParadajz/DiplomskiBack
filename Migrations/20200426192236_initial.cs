@@ -17,7 +17,8 @@ namespace BackendApi.Migrations
                     LastName = table.Column<string>(nullable: true),
                     Username = table.Column<string>(nullable: true),
                     PasswordHash = table.Column<byte[]>(nullable: true),
-                    PasswordSalt = table.Column<byte[]>(nullable: true)
+                    PasswordSalt = table.Column<byte[]>(nullable: true),
+                    Power = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,6 +37,8 @@ namespace BackendApi.Migrations
                     Colour = table.Column<string>(nullable: true),
                     Resizable = table.Column<bool>(nullable: true),
                     Draggable = table.Column<bool>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    Completed = table.Column<bool>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

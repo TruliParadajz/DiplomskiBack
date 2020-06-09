@@ -1,14 +1,21 @@
 ﻿using BackendApi.Context;
 using BackendApi.Entities;
 using BackendApi.Helpers_and_Extensions;
+using BackendApi.HubConfig;
 using BackendApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +24,7 @@ namespace BackendApi.Services
 {
     public interface IEventTaskNotificationService
     {
-        public Task NotifyEmail(int eventTaskId, int userId);
+        public Task Notify(int eventTaskId, int userId);
     }
     public class EventTaskNotificationService : ControllerBase, IEventTaskNotificationService
     {
@@ -28,6 +35,8 @@ namespace BackendApi.Services
         private readonly SmtpSettings _smtpSettings;
         private readonly AppSettings _appSettings;
         private readonly IConfiguration _configuration;
+        private IServiceProvider _services;
+        private readonly ILogger _logger;
 
         public EventTaskNotificationService(
             DataContext context,
@@ -36,7 +45,11 @@ namespace BackendApi.Services
             IEventTasksService eventTaskService,
             IOptions<SmtpSettings> smtpSettings,
             IOptions<AppSettings> appSettings,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<EventTaskNotificationService> logger,
+            IServiceProvider services
+            //IHubContext<NotificationHub, INotificationHub> hub
+            )
         {
             _context = context;
             _userNotificationService = userNotificationService;
@@ -45,9 +58,11 @@ namespace BackendApi.Services
             _smtpSettings = smtpSettings.Value;
             _appSettings = appSettings.Value;
             _configuration = configuration;
+            _services = services;
+            _logger = logger;
         }
 
-        public Task NotifyEmail(int eventTaskId, int userId)
+        public Task Notify(int eventTaskId, int userId)
         {
             var userNotification = _context.UserNotifications
                 .Where(uN => uN.UserId == userId)
@@ -88,6 +103,7 @@ namespace BackendApi.Services
                 Hours = userNotification.Hours
             };
             var result = SendEmailAsync(emailModel);
+
             if (result.IsCompleted)
             {
                 EventTaskNotification newEventTaskNotification = new EventTaskNotification()
@@ -100,8 +116,33 @@ namespace BackendApi.Services
                     UserNotification = userNotification,
                     UserNotificationId = userNotification.Id
                 };
+
+                if (userNotification.AppNotification == true)
+                {
+                    HubConnection connection = new HubConnectionBuilder()
+                        .WithUrl("http://localhost:57541/notification")
+                        .WithAutomaticReconnect()
+                        .Build();
+
+                    connection.StartAsync().ContinueWith(task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            //aaaaa
+                        }
+                        else
+                        {
+                            connection.InvokeAsync("transfernotifications", emailModel);
+                        }
+                    }).Wait();
+                    connection.DisposeAsync();
+                    newEventTaskNotification.AppNotification = 1;
+                }
+                
+
                 _context.EventTaskNotifications.Add(newEventTaskNotification);
                 _context.SaveChanges();
+
             }
             return result;
         }
@@ -144,12 +185,12 @@ namespace BackendApi.Services
                     smtp.UseDefaultCredentials = false;
                     smtp.Credentials = new System.Net.NetworkCredential(username, password);
                     smtp.EnableSsl = true;
-                    smtp.Send(mail);
+                    await smtp.SendMailAsync(mail);
                 }
             }
             catch (Exception ex)
             {
-
+                _logger.LogWarning($"Error sending email. Recipient username : {recipient}");
             }
         }
     }

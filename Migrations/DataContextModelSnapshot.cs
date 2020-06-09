@@ -29,6 +29,12 @@ namespace BackendApi.Migrations
                     b.Property<string>("Colour")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Completed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("Draggable")
                         .HasColumnType("bit");
 
@@ -106,6 +112,9 @@ namespace BackendApi.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("Power")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
@@ -173,7 +182,7 @@ namespace BackendApi.Migrations
 
             modelBuilder.Entity("BackendApi.Entities.UserNotification", b =>
                 {
-                    b.HasOne("BackendApi.Entities.User", null)
+                    b.HasOne("BackendApi.Entities.User", "User")
                         .WithOne("UserNotification")
                         .HasForeignKey("BackendApi.Entities.UserNotification", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)

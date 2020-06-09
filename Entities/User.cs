@@ -17,6 +17,7 @@ namespace BackendApi.Entities
         public string Username { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        public int Power { get; set; }
 
         public ICollection<EventTask> Events { get; set; }
         public UserNotification UserNotification { get; set; }

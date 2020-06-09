@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200419144736_initial")]
+    [Migration("20200426192236_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,12 @@ namespace BackendApi.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Colour")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("Draggable")
@@ -108,6 +114,9 @@ namespace BackendApi.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<int>("Power")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
@@ -175,7 +184,7 @@ namespace BackendApi.Migrations
 
             modelBuilder.Entity("BackendApi.Entities.UserNotification", b =>
                 {
-                    b.HasOne("BackendApi.Entities.User", null)
+                    b.HasOne("BackendApi.Entities.User", "User")
                         .WithOne("UserNotification")
                         .HasForeignKey("BackendApi.Entities.UserNotification", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)

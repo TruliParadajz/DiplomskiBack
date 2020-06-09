@@ -49,7 +49,7 @@ namespace BackendApi.MW
                 var dto = new ApiErrorDto("ERR-" + ((int)HttpStatusCode.BadRequest).ToString(), ex.Message, HttpStatusCode.BadRequest);
                 await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(dto));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 var errorCode = (int)HttpStatusCode.InternalServerError;
                 httpContext.Response.StatusCode = errorCode;
